@@ -7,7 +7,6 @@ import uuid
 import datetime
 
 KEY_ORDER_DEFAULT = 10000
-LINKED_ART_CONTEXT_URI = "https://linked.art/ns/v1/linked-art.json"
 
 # 2.5 and 2.6 are very out of date. Assume 2.7 or better
 import json
@@ -66,7 +65,6 @@ re_bnodes = re.compile("^_:b([0-9]+) ", re.M)
 re_bnodeo = re.compile("> _:b([0-9]+) <", re.M)
 re_quad = re.compile(" <[^<]+?> .$", re.M)
 from rdflib import ConjunctiveGraph
-
 
 PropInfo = namedtuple("PropInfo", [
 	'property', # the name of the property, eg 'identified_by'
@@ -353,7 +351,7 @@ class CromulentFactory(object):
 			if type(val) is list:
 				for v in val:
 					if isinstance(v, ExternalResource):
-						if not v in found and v.id and not v._linked_art_boundary_okay(what, p, v) and set(v.list_my_props()).difference(set(["label", "id"])):
+						if not v in found and v.id and not v._document_boundary_okay(what, p, v) and set(v.list_my_props()).difference(set(["label", "id"])):
 							found.append(v)
 						downstream = self.find_serializable(v)
 						for d in downstream:
@@ -897,7 +895,7 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 		if type(value) != dict:
 			raise DataError("Should be a dict or a string")
 		for k,v in value.items():
-			# assume @language, @set
+			# assume @language, @set -- e.g. always an array
 			if type(v) != list:
 				v = [v]
 			if k in current:
@@ -985,8 +983,8 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 				del d[k]
 			else:
 				if isinstance(v, ExternalResource):
-					if self._factory.linked_art_boundaries and \
-						not self._linked_art_boundary_okay(top, k, v):
+					if self._factory.document_boundaries and \
+						not self._document_boundary_okay(top, k, v):
 						# never follow, so just add to done
 						done[id(v)] = 1
 					else:
@@ -994,8 +992,8 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 				elif type(v) is list:
 					for ni in v:
 						if isinstance(ni, ExternalResource):
-							if self._factory.linked_art_boundaries and \
-								not self._linked_art_boundary_okay(top, k, ni):
+							if self._factory.document_boundaries and \
+								not self._document_boundary_okay(top, k, ni):
 								# never follow, so just add to done
 								done[id(ni)] = 1							
 							else:
@@ -1181,8 +1179,8 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 				continue
 			k = self._property_name_map.get(k, k)
 			if isinstance(v, ExternalResource):
-				if self._factory.linked_art_boundaries and \
-					not self._linked_art_boundary_okay(top, k, v):
+				if self._factory.document_boundaries and \
+					not self._document_boundary_okay(top, k, v):
 					# never follow, so just add to done
 					done[id(v)] = 1
 				else:
@@ -1190,8 +1188,8 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 			elif type(v) is list:
 				for ni in v:
 					if isinstance(ni, ExternalResource):
-						if self._factory.linked_art_boundaries and \
-							not self._linked_art_boundary_okay(top, k, ni):
+						if self._factory.document_boundaries and \
+							not self._document_boundary_okay(top, k, ni):
 							# never follow, so just add to done
 							done[id(ni)] = 1							
 						else:
@@ -1235,7 +1233,7 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 				result[k] = v
 		return result
 
-	def _linked_art_boundary_okay(self, top, prop, value):
+	def _document_boundary_okay(self, top, prop, value):
 		# Return false to say do not cross this boundary
 		# Without replacement, just return True always
 		return True

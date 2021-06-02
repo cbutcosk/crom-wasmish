@@ -10,20 +10,24 @@ MetadataEntry	class	MetadataEntry	MetadataEntry		CoreResource	1
 Direction	class	Direction	Direction		rdf:Resource	1
 Hint	class	Hint	Hint		rdf:Resource	1
 Mode	class	Mode	Mode		rdf:Resource	1
-as:OrderedCollection	class	OrderedCollection	Annotation Collection		CoreResource	1
-as:OrderedCollectionPage	class	OrderedCollectionPage	Annotation Collection Page		CoreResource	1
+as:OrderedCollection	class	AnnotationCollection	Annotation Collection		CoreResource	1
+as:OrderedCollectionPage	class	AnnotationPage	Annotation Page		CoreResource	1
 oa:Annotation	class	Annotation	Annotation		CoreResource	1
-schema:WebAPI	class	WebAPI	Service		CoreResource	1
+schema:WebAPI	class	Service	Service		CoreResource	1
+http://iiif.io/api/image/1#ImageService	class	ImageService1	ImageService1		schema:WebAPI	1
+http://iiif.io/api/image/2#ImageService	class	ImageService2	ImageService2		schema:WebAPI	1
+http://iiif.io/api/image/3#ImageService	class	ImageService3	ImageService3		schema:WebAPI	1
+http://iiif.io/api/search/1#SearchService	class	SearchService1	SearchService1		schema:WebAPI	1
 dcterms:Agent	class	Agent	Agent		CoreResource	1
 dctypes:Dataset	class	Dataset	Dataset		ContentResource	1
-dctypes:StillImage	class	StillImage	Image		ContentResource	1
-dctypes:MovingImage	class	MovingImage	Video		ContentResource	1
-dctypes:Sound	class	Sound	Audio		ContentResource	1
+dctypes:StillImage	class	Image	Image		ContentResource	1
+dctypes:MovingImage	class	Video	Video		ContentResource	1
+dctypes:Sound	class	Audio	Audio		ContentResource	1
 dctypes:Text	class	Text	Text		ContentResource	1
 dcterms:RightsStatement	class	RightsStatement	Rights Statement		rdf:Resource	1
 dcterms:Standard	class	Standard	Standard		rdf:Resource	1
 rdfs:label	property	label	label			rdf:Resource	rdf:langString		10000	1	1
-metadataEntries	property	metadataEntries	metadata			rdf:Resource	MetadataEntry		10000	1	1
+metadataEntries	property	metadata	metadata			rdf:Resource	MetadataEntry		10000	1	1
 rdf:value	property	value	value			MetadataEntry	rdf:langString		10000	1	1
 as:summary	property	summary	summary			rdf:Resource	rdf:langString		10000	1	1
 requiredStatement	property	requiredStatement	requiredStatement			rdf:Resource	MetadataEntry		10000	1	0
@@ -31,24 +35,24 @@ dcterms:rights	property	rights	rights			rdf:Resource	dcterms:RightsStatement		10
 schema:provider	property	provider	provider			rdf:Resource	dcterms:Agent		10000	1	1
 foaf:logo	property	logo	logo			CoreResource	dctypes:StillImage		10000	1	1
 thumbnail	property	thumbnail	thumbnail			rdf:Resource	ContentResource		10000	1	1
-navigationDate	property	navigationDate	navDate			CoreResource	xsd:dateTime		10000	1	0
+navigationDate	property	navDate	navDate			CoreResource	xsd:dateTime		10000	1	0
 accompanyingCanvas	property	accompanyingCanvas	accompanyingCanvas			CoreResource	Canvas		10000	1	1
 placeholderCanvas	property	placeholderCanvas	placeholderCanvas			CoreResource	Canvas		10000	1	1
 dc:format	property	format	format			ContentResource	xsd:string		10000	1	0
 dc:language	property	language	language			ContentResource	xsd:string		10000	1	1
-dcterms:conformsTo	property	conformsTo	profile			ContentResource	dcterms:Standard		10000	1	1
+dcterms:conformsTo	property	profile	profile			ContentResource	dcterms:Standard		10000	1	1
 exif:height	property	height	height			ContentResource	xsd:integer		10000	1	0
 exif:width	property	width	width			ContentResource	xsd:integer		10000	1	0
-ebu:duration	property	duration	duration			ContentResource	xsd:integer		10000	1	0
+ebu:duration	property	duration	duration			ContentResource	xsd:decimal		10000	1	0
 viewingDirection	property	viewingDirection	viewingDirection			CoreResource	Direction		10000	1	1
 behavior	property	behavior	behavior			rdf:Resource	Hint		10000	1	1
 timeMode	property	timeMode	timeMode			oa:Annotation	Mode		10000	1	0
 foaf:homepage	property	homepage	homepage			rdf:Resource	ContentResource		10000	1	1
-dcterms:hasFormat	property	hasFormat	rendering			rdf:Resource	ContentResource		10000	1	1
-schema:potentialAction	property	potentialAction	service			rdf:Resource	schema:WebAPI		10000	1	1
+dcterms:hasFormat	property	rendering	rendering			rdf:Resource	ContentResource		10000	1	1
+schema:potentialAction	property	service	service			rdf:Resource	schema:WebAPI		10000	1	1
 rdfs:seeAlso	property	seeAlso	seeAlso			rdf:Resource	ContentResource		10000	1	1
 start	property	start	start			CoreResource	rdf:Resource		10000	1	1
-supplementary	property	supplementary	supplementary			rdf:Resource	as:OrderedCollection		10000	1	1
+supplementary	property	supplementary	supplementary			Range	as:OrderedCollection		10000	1	1
 services	property	services	services			CoreResource	schema:WebAPI		10000	1	1
 dcterms:partOf	property	partOf	partOf			CoreResource	CoreResource		10000	1	1
 as:items	property	items	items			CoreResource	CoreResource		10000	1	1

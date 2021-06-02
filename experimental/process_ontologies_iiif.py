@@ -25,13 +25,21 @@ NS = {'rdf':"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 
 
 key_order_hash = {}
-property_overrides = {}
+class_overrides = {"as:OrderedCollection": "AnnotationCollection", "as:OrderedCollectionPage":"AnnotationPage",
+	"dctypes:MovingImage": "Video", "dctypes:StillImage": "Image", "schema:WebAPI": "Service", 
+	"dctypes:Sound": "Audio", "http://iiif.io/api/image/1#ImageService": "ImageService1",
+	"http://iiif.io/api/image/2#ImageService": "ImageService2",
+	"http://iiif.io/api/image/3#ImageService": "ImageService3",
+	"http://iiif.io/api/search/1#SearchService": "SearchService1"
+}
+property_overrides = {"metadataEntries": "metadata", "navigationDate": "navDate", "dcterms:conformsTo": "profile",
+	"dcterms:hasFormat": "rendering", "schema:potentialAction": "service", 'dcterms:part_of': 'partOf'}
+
 profile_flags = {'exif:height': [1,0], 'exif:width':[1,0], 'ebu:duration':[1,0], 'dc:format':[1,0], 
 	'requiredStatement':[1,0], 'navigationDate':[1,0], 'timeMode':[1,0]}
 stuff = []
 propXHash = {}
 classXHash = {}
-
 
 def process_classes(dom):
 	classes = dom.xpath("//rdfs:Class", namespaces=NS)
@@ -71,9 +79,9 @@ def process_classes(dom):
 		else:
 			subCls = ""
 
-		# Hack extensions to be readable :(
-		if name == "incoming":
-			ccname = "outgoing"
+
+		if name in class_overrides:
+			ccname = class_overrides[name]
 		else:
 			# Assume that we've done our job okay and put in overrides for NSS
 			cidx = name.find(":")

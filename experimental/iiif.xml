@@ -57,7 +57,7 @@
 	</rdfs:Class>
 
 	<rdfs:Class rdf:about="as:OrderedCollectionPage">
-		<rdfs:label xml:lang="en">Annotation Collection Page</rdfs:label>
+		<rdfs:label xml:lang="en">Annotation Page</rdfs:label>
 		<rdfs:subClassOf rdf:resource="CoreResource"/>
 	</rdfs:Class>
 
@@ -69,6 +69,24 @@
 	<rdfs:Class rdf:about="schema:WebAPI">
 		<rdfs:label xml:lang="en">Service</rdfs:label>
 		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+
+	<rdfs:Class rdf:about="http://iiif.io/api/image/1#ImageService">
+		<rdfs:label xml:lang="en">ImageService1</rdfs:label>
+		<rdfs:subClassOf rdf:resource="schema:WebAPI"/>
+	</rdfs:Class>	
+	<rdfs:Class rdf:about="http://iiif.io/api/image/2#ImageService">
+		<rdfs:label xml:lang="en">ImageService2</rdfs:label>
+		<rdfs:subClassOf rdf:resource="schema:WebAPI"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="http://iiif.io/api/image/3#ImageService">
+		<rdfs:label xml:lang="en">ImageService3</rdfs:label>
+		<rdfs:subClassOf rdf:resource="schema:WebAPI"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="http://iiif.io/api/search/1#SearchService">
+		<rdfs:label xml:lang="en">SearchService1</rdfs:label>
+		<rdfs:subClassOf rdf:resource="schema:WebAPI"/>
 	</rdfs:Class>
 
 	<rdfs:Class rdf:about="dcterms:Agent">
@@ -212,7 +230,7 @@
 	<rdf:Property rdf:about="ebu:duration">
 		<rdfs:label>duration</rdfs:label>
 		<rdfs:domain rdf:resource="ContentResource"/>
-		<rdfs:range rdf:resource="xsd:integer"/>
+		<rdfs:range rdf:resource="xsd:decimal"/>
 	</rdf:Property>
 
 	<rdf:Property rdf:about="viewingDirection">
@@ -267,7 +285,7 @@
 
 	<rdf:Property rdf:about="supplementary">
 		<rdfs:label>supplementary</rdfs:label>
-		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:domain rdf:resource="Range"/>
 		<rdfs:range rdf:resource="as:OrderedCollection"/>
 	</rdf:Property>
 
