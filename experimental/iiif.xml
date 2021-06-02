@@ -1,0 +1,307 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:owl="http://www.w3.org/2002/07/owl#" xml:base="https://iiif.io/api/presentation/3#" xmlns:prezi="https://iiif.io/api/presentation/3#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dctypes="http://purl.org/dc/dcmitype/" xmlns:schema="https://schema.org/" xmlns:as="http://www.w3.org/ns/activitystreams#">
+
+	<rdfs:Class rdf:about="rdf:Resource">
+		<rdfs:label xml:lang="en">RDF Resource</rdfs:label>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="CoreResource">
+		<rdfs:label xml:lang="en">Core Presentation Resource</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="ContentResource">
+		<rdfs:label xml:lang="en">Content Bearing Resource</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="Collection">
+		<rdfs:label xml:lang="en">Collection</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="Manifest">
+		<rdfs:label xml:lang="en">Manifest</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="Canvas">
+		<rdfs:label xml:lang="en">Canvas</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="Range">
+		<rdfs:label xml:lang="en">Range</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="MetadataEntry">
+		<rdfs:label xml:lang="en">MetadataEntry</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="Direction">
+		<rdfs:label xml:lang="en">Direction</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="Hint">
+		<rdfs:label xml:lang="en">Hint</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="Mode">
+		<rdfs:label xml:lang="en">Mode</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+
+
+	<rdfs:Class rdf:about="as:OrderedCollection">
+		<rdfs:label xml:lang="en">Annotation Collection</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>		
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="as:OrderedCollectionPage">
+		<rdfs:label xml:lang="en">Annotation Collection Page</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="oa:Annotation">
+		<rdfs:label xml:lang="en">Annotation</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="schema:WebAPI">
+		<rdfs:label xml:lang="en">Service</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="dcterms:Agent">
+		<rdfs:label xml:lang="en">Agent</rdfs:label>
+		<rdfs:subClassOf rdf:resource="CoreResource"/>
+	</rdfs:Class>
+
+
+	<rdfs:Class rdf:about="dctypes:Dataset">
+		<rdfs:label xml:lang="en">Dataset</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="dctypes:StillImage">
+		<rdfs:label xml:lang="en">Image</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="dctypes:MovingImage">
+		<rdfs:label xml:lang="en">Video</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="dctypes:Sound">
+		<rdfs:label xml:lang="en">Audio</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="dctypes:Text">
+		<rdfs:label xml:lang="en">Text</rdfs:label>
+		<rdfs:subClassOf rdf:resource="ContentResource"/>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="dcterms:RightsStatement">
+		<rdfs:label xml:lang="en">Rights Statement</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+	<rdfs:Class rdf:about="dcterms:Standard">
+		<rdfs:label xml:lang="en">Standard</rdfs:label>
+		<rdfs:subClassOf rdf:resource="rdf:Resource"/>
+	</rdfs:Class>
+
+	<rdf:Property rdf:about="rdfs:label">
+		<rdfs:label>label</rdfs:label>
+    	<rdfs:domain rdf:resource="rdf:Resource"/>
+    	<rdfs:range rdf:resource="rdf:langString"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="metadataEntries">
+		<rdfs:label>metadata</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="MetadataEntry"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="rdf:value">
+		<rdfs:label>value</rdfs:label>
+    	<rdfs:domain rdf:resource="MetadataEntry"/>
+    	<rdfs:range rdf:resource="rdf:langString"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="as:summary">
+		<rdfs:label>summary</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="rdf:langString"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="requiredStatement">
+		<rdfs:label>requiredStatement</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="MetadataEntry"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="dcterms:rights">
+		<rdfs:label>rights</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="dcterms:RightsStatement"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="schema:provider">
+		<rdfs:label>provider</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="dcterms:Agent"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="foaf:logo">
+		<rdfs:label>logo</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="dctypes:StillImage"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="thumbnail">
+		<rdfs:label>thumbnail</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="ContentResource"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="navigationDate">
+		<rdfs:label>navDate</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="xsd:dateTime"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="accompanyingCanvas">
+		<rdfs:label>accompanyingCanvas</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="Canvas"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="placeholderCanvas">
+		<rdfs:label>placeholderCanvas</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="Canvas"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="dc:format">
+		<rdfs:label>format</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="xsd:string"/>
+	</rdf:Property>	
+
+	<rdf:Property rdf:about="dc:language">
+		<rdfs:label>language</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="xsd:string"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="dcterms:conformsTo">
+		<rdfs:label>profile</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="dcterms:Standard"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="exif:height">
+		<rdfs:label>height</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="xsd:integer"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="exif:width">
+		<rdfs:label>width</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="xsd:integer"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="ebu:duration">
+		<rdfs:label>duration</rdfs:label>
+		<rdfs:domain rdf:resource="ContentResource"/>
+		<rdfs:range rdf:resource="xsd:integer"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="viewingDirection">
+		<rdfs:label>viewingDirection</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="Direction"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="behavior">
+		<rdfs:label>behavior</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="Hint"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="timeMode">
+		<rdfs:label>timeMode</rdfs:label>
+		<rdfs:domain rdf:resource="oa:Annotation"/>
+		<rdfs:range rdf:resource="Mode"/>
+	</rdf:Property>
+
+
+	<rdf:Property rdf:about="foaf:homepage">
+		<rdfs:label>homepage</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="ContentResource"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="dcterms:hasFormat">
+		<rdfs:label>rendering</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="ContentResource"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="schema:potentialAction">
+		<rdfs:label>service</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="schema:WebAPI"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="rdfs:seeAlso">
+		<rdfs:label>seeAlso</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="ContentResource"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="start">
+		<rdfs:label>start</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="rdf:Resource"/>
+		<!-- Canvas or Selector -->
+	</rdf:Property>
+
+	<rdf:Property rdf:about="supplementary">
+		<rdfs:label>supplementary</rdfs:label>
+		<rdfs:domain rdf:resource="rdf:Resource"/>
+		<rdfs:range rdf:resource="as:OrderedCollection"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="services">
+		<rdfs:label>services</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="schema:WebAPI"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="dcterms:partOf">
+		<rdfs:label>partOf</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="CoreResource"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="as:items">
+		<rdfs:label>items</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="CoreResource"/>
+		<!-- list of Core -->
+	</rdf:Property>
+
+	<rdf:Property rdf:about="structures">
+		<rdfs:label>structures</rdfs:label>
+		<rdfs:domain rdf:resource="Manifest"/>
+		<rdfs:range rdf:resource="Range"/>
+		<!-- list of Range -->
+	</rdf:Property>
+
+	<rdf:Property rdf:about="annotations">
+		<rdfs:label>annotations</rdfs:label>
+		<rdfs:domain rdf:resource="CoreResource"/>
+		<rdfs:range rdf:resource="as:OrderedCollectionPage"/>
+		<!-- list of OrderedCollectionPage -->
+	</rdf:Property>
+
+</rdf:RDF>

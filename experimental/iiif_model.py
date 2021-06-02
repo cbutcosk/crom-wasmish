@@ -27,20 +27,40 @@ except:
 from pyld import jsonld
 pyld_proc = jsonld.JsonLdProcessor()
 min_context = {
-    "crm": "http://www.cidoc-crm.org/cidoc-crm/", 
-    "sci": "http://www.ics.forth.gr/isl/CRMsci/", 
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#", 
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#", 
-    "dc": "http://purl.org/dc/elements/1.1/", 
-    "dcterms": "http://purl.org/dc/terms/", 
-    "schema": "http://schema.org/", 
     "skos": "http://www.w3.org/2004/02/skos/core#", 
-    "foaf": "http://xmlns.com/foaf/0.1/", 
-    "xsd": "http://www.w3.org/2001/XMLSchema#", 
-    "dig": "http://www.ics.forth.gr/isl/CRMdig/", 
-    "la": "https://linked.art/ns/terms/", 
+    "prezi": "http://iiif.io/api/presentation/3#",
+    "image": "http://iiif.io/api/image/3#",
+    "exif": "http://www.w3.org/2003/12/exif/ns#",
+    "oa": "http://www.w3.org/ns/oa#",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "dctypes": "http://purl.org/dc/dcmitype/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "as": "http://www.w3.org/ns/activitystreams#",
+    "ebu": "http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#",
+    "schema": "https://schema.org/",
     "id": "@id", 
-    "type": "@type"
+    "type": "@type",
+
+    "as:items": {
+      "@type": "@id",
+      "@id": "as:items",
+      "@container": "@list"
+    },
+    "prezi:structures": {
+      "@type": "@id",
+      "@id": "iiif_prezi:structures",
+      "@container": "@list"
+    },
+    "prezi:annotations": {
+      "@type": "@id",
+      "@id": "iiif_prezi:annotations",
+      "@container": "@list"
+    }
+
 }
 re_bnodes = re.compile("^_:b([0-9]+) ", re.M)
 re_bnodeo = re.compile("> _:b([0-9]+) <", re.M)
@@ -191,6 +211,7 @@ class CromulentFactory(object):
 				ctx = json.loads(data)
 				js['@context'].update(ctx['@context'])
 			except:
+				raise
 				raise ConfigurationError("Provided context does not have valid JSON")				
 		# this is the merged context information, not any single one
 		self.context_json = js
@@ -494,7 +515,7 @@ class CromulentFactory(object):
 			# Need to pass over to rdflib
 			g = ConjunctiveGraph()
 			for (k,v) in min_context.items():
-				if v[0] != "@":
+				if type(v) == str and v[0] != "@":
 					g.bind(k, v)
 			g.parse(data=data, format="nquads")
 			out = g.serialize(format=format)
@@ -689,28 +710,23 @@ class BaseResource(ExternalResource):
 		# this might raise an exception if value is not allowed on the object
 		# but easier to do it in the main init than on many generated subclasses
 
-
 		try:
-			# XXX This is CRM specific
 			is_sym = isinstance(self, SymbolicObject)
 			is_dim = isinstance(self, Dimension)
-
-			if value and is_dim:
-				self.value = value
-			elif content and is_sym:
-				self.content = content
-			elif value and is_sym:
-				self.content = value # not the right param, but not ambiguous
-			elif content and is_dim:
-				self.value = content # ditto
-			elif value or content: 
-				raise ProfileError("Class '%s' does not hold values" % self.__class__._type)
-			# Custom post initialization function for autoconstructed classes
-		except NameError:
-			# This happens when testing SymbolicObject and it hasn't been defined
-			pass
 		except:
-			raise
+			is_sym = False ; is_dim = False
+
+		if value and is_dim:
+			self.value = value
+		elif content and is_sym:
+			self.content = content
+		elif value and is_sym:
+			self.content = value # not the right param, but not ambiguous
+		elif content and is_dim:
+			self.value = content # ditto
+		elif value or content: 
+			raise ProfileError("Class '%s' does not hold values" % self.__class__._type)
+		# Custom post initialization function for autoconstructed classes
 		self._post_init(**kw)
 
 	def __dir__(self):
@@ -1363,7 +1379,7 @@ def build_class(crmName, parent, vocabData):
 	globals()[name] = c
 	data['class'] = c
 	if not ":" in crmName:
-		c._type = "crm:%s" % crmName
+		c._type = "prezi:%s" % crmName
 	else:
 		c._type = crmName
 	c._uri_segment = name
@@ -1385,13 +1401,13 @@ def build_class(crmName, parent, vocabData):
 def _make_property_def(p):
 	name = p['name']
 	if not ":" in name:
-		name = "crm:%s" % name
+		name = "prezi:%s" % name
 	rng = p['range']
 	ccname = p['propName']
 	if p['inverse']:
 		i = p['inverse']
 		if i[0] == "P":
-			invRdf = "crm:%s" % i
+			invRdf = "prezi:%s" % i
 		else:
 			invRdf = i
 	else:
@@ -1438,13 +1454,15 @@ def build_classes(fn=None, topClass=None):
 
 			inverse = None
 			rngd = vocabData.get(value['rangeStr'], None)
-			# Should dateTime cast directly to a datetime.datetime? Probably not as it will test isinstance()
 			if rngs in ['rdfs:Literal', 'xsd:dateTime', 'xsd:string', 'rdf:langString', 'rdfs:Class']:
-					rng = str 
+				rng = str 
 			elif rngs in ['xsd:integer', 'xsd:int']:
 				rng = int
 			elif rngs in ['xsd:decimal', 'xsd:long']:
 				rng = float
+			#elif rngs in ['rdf:List']:
+			#	rng = list
+
 			elif not rngd:
 				raise ConfigurationError("Failed to get range for %s property %s - %s" % (c, name, rngs))
 			else:
@@ -1478,6 +1496,6 @@ def build_classes(fn=None, topClass=None):
 # XXX This should be invoked rather than inline so the module can be loaded
 # and a different context used. But for now ...
 # Build the factory first, so properties can be added to key_order
-factory = CromulentFactory("http://lod.example.org/museum/", context="https://linked.art/ns/v1/linked-art.json")
-build_classes()
+factory = CromulentFactory("http://iiif.example.org/prezi/", load_context=False)
+build_classes(fn="iiif.tsv", topClass="rdf:Resource")
 # Need to then configure the boundary classes after they're created
