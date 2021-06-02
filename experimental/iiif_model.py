@@ -79,6 +79,9 @@ PropInfo = namedtuple("PropInfo", [
 	])
 
 
+class LanguageMap(dict):
+	pass
+
 class CromulentError(Exception):
 	"""Base exception class"""
 
@@ -122,7 +125,7 @@ class CromJsonEncoder(JSONEncoder):
 
 class CromulentFactory(object):
 
-	def __init__(self, base_url="", base_dir="", lang="", full_names=False, 
+	def __init__(self, base_url="", base_dir="", lang="none", full_names=False, 
 		context="", context_file={}, load_context=True):
 		self.base_url = base_url
 		self.base_dir = base_dir
@@ -146,7 +149,7 @@ class CromulentFactory(object):
 		self.pair_tree_levels = 0
 
 		self.auto_id_type = "int-per-segment" #  "int", "int-per-type", "int-per-segment", "uuid", "uuid-segment"
-		# self.default_lang = lang  # NOT USED
+		self.default_lang = lang
 		self.filename_extension = ".json"  # some people like .jsonld
 		self.context_uri = context # Might be a list, or a context value as a dict
 		self.context_json = {}
@@ -165,7 +168,7 @@ class CromulentFactory(object):
 			self.load_context(context, context_filemap)
 
 		self.elasticsearch_compatible = False # return {'id': 'uri'} instead of string
-		self.linked_art_boundaries = False # break on linked art API boundaries between classes
+		self.document_boundaries = False # break on boundaries between classes
 		self.id_type_label = True # references are id, type and _label, not just id.
 
 		# if sorting is unimportant, use fast. If sorting is important, and python >= 3.6, use fast.
@@ -336,7 +339,7 @@ class CromulentFactory(object):
 
 	def find_serializable(self, what):
 
-		if not self.linked_art_boundaries:
+		if not self.document_boundaries:
 			raise ConfigurationError("Factory doesn't have any boundaries to distinguish between entities")
 
 		found = []
@@ -350,7 +353,7 @@ class CromulentFactory(object):
 			if type(val) is list:
 				for v in val:
 					if isinstance(v, ExternalResource):
-						if not v in found and v.id and not v._linked_art_boundary_okay(what, p, v) and set(v.list_my_props()).difference(set(["_label", "id"])):
+						if not v in found and v.id and not v._linked_art_boundary_okay(what, p, v) and set(v.list_my_props()).difference(set(["label", "id"])):
 							found.append(v)
 						downstream = self.find_serializable(v)
 						for d in downstream:
@@ -421,7 +424,7 @@ class CromulentFactory(object):
 		return out 		
 
 	def toString(self, what, compact=True, collapse=0, done=None):
-		"""Return JSON setialization as string."""
+		"""Return JSON serialization as string."""
 		if not done:
 			done = {}
 		js = self.toJSON(what, done=done)
@@ -689,12 +692,12 @@ class BaseResource(ExternalResource):
 
 	_integer_properties = []
 	_object_properties = []
+	_lang_properties = []
 	_required_properties = []
 	_warn_properties = []
-	_classification = ""
 	_classhier = []
 
-	def __init__(self, ident=None, label="", value="", content="", **kw):
+	def __init__(self, ident=None, label="", **kw):
 		"""Initialize BaseObject."""
 		super(BaseResource, self).__init__(ident)
 
@@ -706,26 +709,8 @@ class BaseResource(ExternalResource):
 
 		# Set label and value/content
 		if label:
-			self._label = label
-		# this might raise an exception if value is not allowed on the object
-		# but easier to do it in the main init than on many generated subclasses
+			self.label = label
 
-		try:
-			is_sym = isinstance(self, SymbolicObject)
-			is_dim = isinstance(self, Dimension)
-		except:
-			is_sym = False ; is_dim = False
-
-		if value and is_dim:
-			self.value = value
-		elif content and is_sym:
-			self.content = content
-		elif value and is_sym:
-			self.content = value # not the right param, but not ambiguous
-		elif content and is_dim:
-			self.value = content # ditto
-		elif value or content: 
-			raise ProfileError("Class '%s' does not hold values" % self.__class__._type)
 		# Custom post initialization function for autoconstructed classes
 		self._post_init(**kw)
 
@@ -773,7 +758,7 @@ class BaseResource(ExternalResource):
 		"""Attribute setting magic for error checking and resource/literal handling."""
 
 		if which[0] == "_" or not value:
-			# _label goes through here, but it would below anyway, as it takes a Literal
+			# Allow all _ leading properties to be set for internal management
 			object.__setattr__(self, which, value)			
 		else:
 			# Allow per-class setters
@@ -790,6 +775,8 @@ class BaseResource(ExternalResource):
 
 			if ok == 2:
 				self._set_magic_resource(which, value)
+			elif which in self._lang_properties:
+				self._set_magic_lang(which, value)
 			else:			
 				object.__setattr__(self, which, value)				
 		 
@@ -811,12 +798,14 @@ class BaseResource(ExternalResource):
 
 				if val_range:
 					rng = pinfo.range
-					if rng is str:					
+					if rng == str:					
 						return 1
 					elif type(value) is BaseResource:
 						# Allow direct instances of base resource anywhere
 						# this is an override for external URIs
 						return 2
+					elif rng == LanguageMap and (isinstance(value, str) or isinstance(value, dict)):
+						return 1
 					elif isinstance(value, rng):
 						return 2
 					else:
@@ -891,6 +880,36 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 			value._set_magic_resource(inverse, self, True)
 		if self._factory.process_multiplicity and type(current) is not list and multiple:
 			object.__setattr__(self, which, [getattr(self, which)])
+
+	def _set_magic_lang(self, which, value):
+		"""Magical handling of languages for string properties."""
+		# Input:  string, and use "" or default_lang
+		#         dict of lang: value
+		# Merge with existing values
+
+		try:
+			current = getattr(self, which)
+		except:
+			current = {}
+		if type(value) in STR_TYPES:
+			# use default language from factory
+			value = {factory.default_lang: value}
+		if type(value) != dict:
+			raise DataError("Should be a dict or a string")
+		for k,v in value.items():
+			# assume @language, @set
+			if type(v) != list:
+				v = [v]
+			if k in current:
+				cv = current[k]
+				if type(cv) != list:
+					cv = [cv]
+				for vi in v:	
+					cv.append(vi)
+				current[k] = cv
+			else:
+				current[k] = v
+		object.__setattr__(self, which, current)
 
 
 	def _toJSON(self, done, top=None):
@@ -1454,8 +1473,12 @@ def build_classes(fn=None, topClass=None):
 
 			inverse = None
 			rngd = vocabData.get(value['rangeStr'], None)
-			if rngs in ['rdfs:Literal', 'xsd:dateTime', 'xsd:string', 'rdf:langString', 'rdfs:Class']:
+			if rngs in ['rdfs:Literal', 'xsd:dateTime', 'xsd:string', 'rdfs:Class']:
 				rng = str 
+			elif rngs in ['rdf:langString']:
+				rng = LanguageMap
+				# Add to _lang_properties
+				c._lang_properties.append(name)
 			elif rngs in ['xsd:integer', 'xsd:int']:
 				rng = int
 			elif rngs in ['xsd:decimal', 'xsd:long']:
