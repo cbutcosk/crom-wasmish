@@ -2,7 +2,7 @@ from iiif_model import *
 
 
 m = Manifest(label={"en": "Test Manifest"})
-m.summary = "Description of the thing"
+m.summary = {'en': "Description of the thing"}
 me = MetadataEntry(ident="")
 me.label = "label"
 me.value = "value"
@@ -11,7 +11,7 @@ tn = Image(ident="http://example.com/images/1.jpg")
 m.thumbnail = tn
 rs = MetadataEntry(ident="")
 rs.label = "required"
-rs.value = "stmt"
+rs.value = {"en": ["stmt", "stmt2"]}
 m.requiredStatement = rs
 m.rights = RightsStatement(ident="https://creativecommons.org/cc-by/4.0/")
 who = Agent(ident="https://linked-data.yalespace.edu/people/rob")
@@ -63,17 +63,20 @@ cvs = Canvas()
 rng.items = cvs
 cvs.height = 1000
 cvs.width = 800
-cvs.label = "Test Canvas"
+cvs.label = {"en": "Test Canvas"}
 m.items = cvs
 pg = AnnotationPage()
 cvs.items = pg
-anno = Annotation()
-pg.items = anno
-
 pg2 = AnnotationPage()
 cvs.annotations = pg2
+
+anno = Annotation()
+pg.items = anno
 
 
 
 
 print(factory.toString(m, compact=False))
+print('---')
+print(factory.toRDF(m, format="ttl"))
+

@@ -51,16 +51,30 @@ min_context = {
     },
     "prezi:structures": {
       "@type": "@id",
-      "@id": "iiif_prezi:structures",
+      "@id": "prezi:structures",
       "@container": "@list"
     },
     "prezi:annotations": {
       "@type": "@id",
-      "@id": "iiif_prezi:annotations",
+      "@id": "prezi:annotations",
       "@container": "@list"
-    }
+    },
 
+    "none": "@none",
+    "rdfs:label": {
+    	"@id": "rdfs:label",
+    	"@container": ["@language", "@set"],
+    },
+    "rdf:value": {
+    	"@id": "rdf:value",
+    	"@container": ["@language", "@set"],
+    },
+    "as:summary": {
+    	"@id": "as:summary",
+    	"@container": ["@language", "@set"],
+    }
 }
+
 re_bnodes = re.compile("^_:b([0-9]+) ", re.M)
 re_bnodeo = re.compile("> _:b([0-9]+) <", re.M)
 re_quad = re.compile(" <[^<]+?> .$", re.M)

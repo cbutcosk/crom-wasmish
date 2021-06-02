@@ -322,4 +322,37 @@
 		<!-- list of OrderedCollectionPage -->
 	</rdf:Property>
 
+
+	<!-- here includes from AS and OA --> 
+
+	<rdf:Property rdf:about="as:first">
+		<rdfs:label>first</rdfs:label>
+		<rdfs:domain rdf:resource="as:OrderedCollection"/>
+		<rdfs:range rdf:resource="as:OrderedCollectionPage"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="as:last">
+		<rdfs:label>last</rdfs:label>
+		<rdfs:domain rdf:resource="as:OrderedCollection"/>
+		<rdfs:range rdf:resource="as:OrderedCollectionPage"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="as:next">
+		<rdfs:label>next</rdfs:label>
+		<rdfs:domain rdf:resource="as:OrderedCollectionPage"/>
+		<rdfs:range rdf:resource="as:OrderedCollectionPage"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="as:prev">
+		<rdfs:label>prev</rdfs:label>
+		<rdfs:domain rdf:resource="as:OrderedCollectionPage"/>
+		<rdfs:range rdf:resource="as:OrderedCollectionPage"/>
+	</rdf:Property>
+
+	<rdf:Property rdf:about="oa:motivation">
+		<rdfs:label>motivation</rdfs:label>
+		<rdfs:domain rdf:resource="oa:Annotation"/>
+		<rdfs:range rdf:resource="oa:Motivation"/>
+	</rdf:Property>
+
 </rdf:RDF>
