@@ -1,5 +1,6 @@
 from iiif_model import *
-
+from iiif_reader import Reader
+rdr = Reader()
 
 m = Manifest(label={"en": "Test Manifest"})
 m.summary = {'en': "Description of the thing"}
@@ -16,7 +17,7 @@ m.requiredStatement = rs
 m.rights = RightsStatement(ident="https://creativecommons.org/cc-by/4.0/")
 who = Agent(ident="https://linked-data.yalespace.edu/people/rob")
 who.label = "Rob"
-hp =Text(ident="https://yale.edu/people/rob/index.html")
+hp = Text(ident="https://yale.edu/people/rob/index.html")
 hp.format = "text/html"
 hp.language = "en" # ------- this stays singular because it's a literal that isn't langString
 who.homepage = hp
@@ -76,7 +77,11 @@ pg.items = anno
 
 
 
-print(factory.toString(m, compact=False))
-print('---')
-print(factory.toRDF(m, format="ttl"))
+#print(factory.toString(m, compact=False))
+#print('---')
+#print(factory.toRDF(m, format="ttl"))
+
+js = factory.toString(m, compact=False)
+m2 = rdr.read(js)
+
 
