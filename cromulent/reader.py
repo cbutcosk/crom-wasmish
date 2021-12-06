@@ -101,6 +101,7 @@ class Reader(object):
 				raise DataError("Unknown property %s on %s" % (prop, clx.__name__))
 
 			# Climb looking for range
+			rng = str # set a copy default
 			for c in what._classhier:		
 				if prop in c._all_properties:
 					rng = c._all_properties[prop].range

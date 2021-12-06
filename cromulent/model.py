@@ -1012,9 +1012,11 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 			if top is self:
 				nd['@context'] = self._factory.context_uri
 
+			# Walk through from parents to ancestors, which is regular
+			# order of the array
 			for (k,v) in d.items():
 				# look up the rdf predicate in _properties
-				for c in reversed(self._classhier):
+				for c in self._classhier:
 					if k in c._all_properties:
 						nk = c._all_properties[k].predicate
 						nd[nk] = v
@@ -1030,7 +1032,7 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 			# so add this back too
 			if not "@type" in nd or not nd['@type']:
 				# find class up that has a type and use its name
-				for c in reversed(self._classhier):
+				for c in self._classhier:
 					if c._type:
 						nd['@type'] = c._type
 
@@ -1047,7 +1049,7 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 				# XXX TODO This should be configurable not hard coded
 				if 'part' in d:
 					# Calculate which part
-					for c in reversed(self._classhier):
+					for c in self._classhier:
 						if 'part' in c._all_properties:
 							nk = c._all_properties['part'].predicate
 							d['part|%s' % nk]  = d['part']
@@ -1055,7 +1057,7 @@ change factory.multiple_instances_per_property to 'drop' or 'allow'""")
 							break
 				if 'part_of' in d:
 					# Calculate which part
-					for c in reversed(self._classhier):
+					for c in self._classhier:
 						if 'part_of' in c._all_properties:
 							nk = c._all_properties['part_of'].predicate
 							d['part_of|%s' % nk]  = d['part_of']
