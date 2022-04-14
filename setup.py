@@ -1,10 +1,7 @@
 from setuptools import setup
 import sys
 
-if (sys.version_info[0:2] < (2,7)):
-    install_requires =['ordereddict', 'future', 'rdflib', 'PyLD']
-else:
-    install_requires = ['rdflib', 'PyLD']
+install_requires = ['rdflib', 'PyLD']
 
 setup(
     name = 'cromulent',
@@ -24,7 +21,6 @@ setup(
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 2",
         "License :: OSI Approved :: Apache Software License",
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
