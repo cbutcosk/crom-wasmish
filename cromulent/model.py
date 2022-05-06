@@ -12,24 +12,27 @@ import json
 from json import JSONEncoder
 from collections import OrderedDict
 from collections import namedtuple
-from pyld import jsonld
-from rdflib import ConjunctiveGraph
+
+try:
+	from pyld import jsonld
+	from rdflib import ConjunctiveGraph
+except ImportError as e:
+	_has_rdf_dependencies = False
+else:
+	_has_rdf_dependencies = True
 
 KEY_ORDER_DEFAULT = 10000
 LINKED_ART_CONTEXT_URI = "https://linked.art/ns/v1/linked-art.json"
 
-# 2.5 and 2.6 are very out of date. Assume 2.7 or better
+import io
+STR_TYPES = [bytes, str] #Py3.x
+FILE_STREAM_CLASS = io.TextIOBase
 
-try:
-	STR_TYPES = [str, unicode] #Py2.7
-	FILE_STREAM_CLASS = file
-except:
-	import io
-	STR_TYPES = [bytes, str] #Py3.x
-	FILE_STREAM_CLASS = io.TextIOBase
+if _has_rdf_dependencies:
+	pyld_proc = jsonld.JsonLdProcessor()
+else:
+	pyld_proc = None
 
-
-pyld_proc = jsonld.JsonLdProcessor()
 min_context = {
 	"crm": "http://www.cidoc-crm.org/cidoc-crm/",
     "sci": "http://www.ics.forth.gr/isl/CRMsci/",
@@ -464,6 +467,10 @@ class CromulentFactory(object):
 		return ''.join(res)
 
 	def toRDF(self, what, format="nq", bnode_prefix=""):
+
+		if not _has_rdf_dependencies:
+			raise ImportError("toRDF() requires rdflib and pyld -- exiting!")
+
 		# Format can be:  xml, pretty-xml, turtle, n3, nt, trix, trig, nquads
 		# ttl = turtle; nq, n-quads == nquads
 
