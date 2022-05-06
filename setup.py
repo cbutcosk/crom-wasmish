@@ -1,7 +1,11 @@
 from setuptools import setup
 import sys
 
-install_requires = ['rdflib', 'PyLD']
+install_requires = []
+
+extras_require = {
+    "rdf-generation": [ "rdflib", "pyld" ]
+}
 
 setup(
     name = 'cromulent',
