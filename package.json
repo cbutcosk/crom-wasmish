@@ -1,0 +1,26 @@
+{
+  "name": "crom-wasmish",
+  "version": "0.1.0",
+  "description": "crom bindings in a js pacakge",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npx ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cbutcosk/crom-wasmish.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cbutcosk/crom-wasmish/issues"
+  },
+  "homepage": "https://github.com/cbutcosk/crom-wasmish#readme",
+  "dependencies": {
+    "pyodide": "^0.21.3"
+  }
+}
