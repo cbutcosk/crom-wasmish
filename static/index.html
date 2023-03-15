@@ -3,10 +3,23 @@
     <head>
         <title>crom-wasmish: CSV to linked.art JSON-LD</title>
         <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+        <script src="./dist/sqlite-wasm-3410100/jswasm/sqlite3.js"></script>
+        <script src="./dist/papaparse.min"></script>
     </head>
     <body>
-        <h1 id="py-env-status">Working...</h1>
+        <h1 id="py-env-status">crom-wasmish: CSV to linked.art in the browser</h1>
+        <h2>Records</h2>
+        <div>
+            <div id="csv-records">
+                <div id="csv-records-drop-zone" style="width: 200px;height: 100px;border: 5px solid blue;">
+                    <p>Drop CSV file(s) of art objects here</p>
+                </div>
+            </div>
+        </div>
+        <h2>linked.art Documents</h2>
+        <div>
+            <code id="py-results-code"></code>        
+        </div>
         <script type="text/javascript" src="./index.js"></script>
-        <code id="py-results-code"></code>
     </body>
 </html>
