@@ -55,14 +55,10 @@ document.addEventListener("DOMContentLoaded",() => {
             }).catch( err => {
                 console.error(err)
             })
-
-            // await modelRecord({id, title, pyodideInstance: pyodide})
-            // console.log(results.data)
             
         }
 
         Papa.parse(file,{header: true, step: stepCallback, worker: false, download: (typeof file) === "string" ? "true" : "false" })
-
 
     }
 
@@ -99,6 +95,7 @@ document.addEventListener("DOMContentLoaded",() => {
         function sampleCSVHandler(pyo) {
             return (ev) => {
                 ev.preventDefault()
+                ev.stopPropagation()
                 parseCSVFile(ev.target.href,pyo)
             }
         }
