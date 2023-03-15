@@ -1,16 +1,3 @@
-async function modelRecord({id,title, pyodideInstance}) {
-    return pyodideInstance.runPythonAsync(`
-        from cromulent.model import factory
-        from cromulent.vocab import Painting, PrimaryName
-
-        pt = Painting(ident="object/${id}")
-        nm = PrimaryName(content="${title}")
-
-        pt.identified_by = nm
-        factory.toJSON(pt)
-    `)
-}
-
 document.addEventListener("DOMContentLoaded",() => {
 
     async function setupPyodideAndCrom() {
@@ -26,8 +13,8 @@ document.addEventListener("DOMContentLoaded",() => {
 
     async function parseCSVFile(file,pyo) {        
         let stepCallback = (results, parser) => {
-            let id = results.data.id
-            let title = results.data.title ?? ""
+            id = results.data.id
+            title = results.data.title ?? ""
 
             // FIXME: pass these as variables instead of injecting :)
             if (title.includes('"')) {
@@ -35,11 +22,12 @@ document.addEventListener("DOMContentLoaded",() => {
             }
 
             pyo.runPythonAsync(`
+                from js import id, title
                 from cromulent.model import factory
                 from cromulent.vocab import Painting, PrimaryName
 
-                pt = Painting(ident="object/${id}")
-                nm = PrimaryName(content="${title}")
+                pt = Painting(ident=f"object/{id}")
+                nm = PrimaryName(content=f"{title}")
 
                 pt.identified_by = nm
                 factory.toString(pt)
