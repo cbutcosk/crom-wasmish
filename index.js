@@ -1,13 +1,10 @@
-const {loadPyodide} = require("pyodide");
-
 async function run() {
     let pyodide = await loadPyodide()
 
     await pyodide.loadPackage("micropip")
+    micropip = pyodide.pyimport("micropip")
+    await micropip.install("http://localhost:8080/cromulent-0.16.11-py3-none-any.whl")
     return pyodide.runPythonAsync(`
-    import micropip
-    await micropip.install("file:///XXX/dist/cromulent-0.16.11-py3-none-any.whl")
-    
     from cromulent.model import factory
     from cromulent.vocab import Painting, PrimaryName
 
@@ -15,10 +12,13 @@ async function run() {
     nm = PrimaryName(content="A Nice Painting")
 
     pt.identified_by = nm
+
     factory.toString(pt)
     `);
 }
 
 run().then((result) => {
+    console.debug("Running python")
     console.log(result)
+    console.debug("Done running python")
 });
