@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded",() => {
         return pyodide
     }
 
-    async function parseCSVFile(file,pyo) {
+    async function parseCSVFile(file,pyo) {        
         let stepCallback = (results, parser) => {
             let id = results.data.id
             let title = results.data.title ?? ""
@@ -57,11 +57,13 @@ document.addEventListener("DOMContentLoaded",() => {
             })
 
             // await modelRecord({id, title, pyodideInstance: pyodide})
-            console.log(results.data)
+            // console.log(results.data)
             
         }
 
-        Papa.parse(file,{header: true, step: stepCallback, worker: false})
+        Papa.parse(file,{header: true, step: stepCallback, worker: false, download: (typeof file) === "string" ? "true" : "false" })
+
+
     }
 
     async function run() {
@@ -77,12 +79,12 @@ document.addEventListener("DOMContentLoaded",() => {
                     [...ev.dataTransfer.items].forEach((item,i) => {
                         if (item.kind === "file") {
                             const file = item.getAsFile();
-                            parseCSVFile(file,pyo)
+                            parseCSVFile(file,pyodide)
                         }
                     })
                 } else {
                     [...ev.dataTransfer.files].forEach((file,i) => {
-                        parseCSVFile(file,pyo)
+                        parseCSVFile(file,pyodide)
                     })
                 }
 
@@ -94,13 +96,23 @@ document.addEventListener("DOMContentLoaded",() => {
             ev.preventDefault()
         }
 
+        function sampleCSVHandler(pyo) {
+            return (ev) => {
+                ev.preventDefault()
+                parseCSVFile(ev.target.href,pyo)
+            }
+        }
+
         function setupDropHandlers(pyodide) {
             let el = document.getElementById("csv-records-drop-zone")
             el.ondrop = dropHandler(pyodide)
             el.ondragover = dragOverHandler
+
+            let sampleEl = document.getElementById("csv-records-use-sample")
+            sampleEl.onclick = sampleCSVHandler(pyodide)
         }
 
-        setupDropHandlers()
+        setupDropHandlers(pyo)
 
     }
 
