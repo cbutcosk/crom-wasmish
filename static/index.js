@@ -44,10 +44,14 @@ document.addEventListener("DOMContentLoaded",() => {
                 pt.identified_by = nm
                 factory.toString(pt)
             `).then( result => {
-                let el = document.getElementById("py-results-code")
-                el.innerHTML = el.innerHTML + result
+                let resultsUl = document.getElementById("py-results-code")
+                let resultLi = document.createElement("li")
+                let codeFence = document.createElement("code")
+                codeFence.innerHTML = result
 
-                console.log(result)    
+                resultLi.append(codeFence)
+                resultsUl.append(resultLi)
+
             }).catch( err => {
                 console.error(err)
             })
