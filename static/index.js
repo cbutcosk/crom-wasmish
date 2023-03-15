@@ -13,25 +13,28 @@ document.addEventListener("DOMContentLoaded",() => {
 
     async function parseCSVFile(file,pyo) {        
         let stepCallback = (results, parser) => {
-            id = results.data.id
-            title = results.data.title ?? ""
 
-            // FIXME: pass these as variables instead of injecting :)
-            if (title.includes('"')) {
-                title = title.replace(/\"/g,'\\\"')
-            }
+            ((results) => { 
 
-            pyo.runPythonAsync(`
-                from js import id, title
-                from cromulent.model import factory
-                from cromulent.vocab import Painting, PrimaryName
+                let record = { id: results.data.id, title: results.data.title ?? "" }
+                rec = {...record}
 
-                pt = Painting(ident=f"object/{id}")
-                nm = PrimaryName(content=f"{title}")
+                let result = pyo.runPython(`
+                    from js import rec
+                    from cromulent.model import factory
+                    from cromulent.vocab import Painting, PrimaryName
+                    
+                    rec = rec.to_py()
+                    id = rec['id']
+                    title = rec['title']
 
-                pt.identified_by = nm
-                factory.toString(pt)
-            `).then( result => {
+                    pt = Painting(ident=f"object/{id}")
+                    nm = PrimaryName(content=f"{title}")
+
+                    pt.identified_by = nm
+                    factory.toString(pt)
+                `)
+
                 let resultsUl = document.getElementById("py-results-code")
                 let resultLi = document.createElement("li")
                 let codeFence = document.createElement("code")
@@ -40,9 +43,8 @@ document.addEventListener("DOMContentLoaded",() => {
                 resultLi.append(codeFence)
                 resultsUl.append(resultLi)
 
-            }).catch( err => {
-                console.error(err)
-            })
+               
+            })(results)
             
         }
 
