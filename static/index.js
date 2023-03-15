@@ -3,7 +3,7 @@ async function run() {
 
     await pyodide.loadPackage("micropip")
     micropip = pyodide.pyimport("micropip")
-    await micropip.install("http://localhost:8080/cromulent-0.16.11-py3-none-any.whl")
+    await micropip.install("./cromulent-0.16.11-py3-none-any.whl")
     return pyodide.runPythonAsync(`
     from cromulent.model import factory
     from cromulent.vocab import Painting, PrimaryName
