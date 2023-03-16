@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded",() => {
 
     async function run() {
         
+        hljs.highlightAll()
         const pyo = await setupPyodideAndCrom()
         if (pyo) {
             removeLoading()

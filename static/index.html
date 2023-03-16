@@ -9,8 +9,9 @@
         <script src="./dist/pyodide/pyodide.js"></script>
         <!-- <script src="./dist/sqlite-wasm-3410100/jswasm/sqlite3.js"></script> -->
         <script src="./dist/papaparse.min"></script>
+        <script src="./dist/highlight/highlight.min.js"></script>
         <link rel="stylesheet" href="./dist/bulma/css/bulma.min.css">
-
+        <link rel="stylesheet" href="./dist/highlight/styles/default.min.css">
     </head>
     <body>
     <section>
@@ -29,15 +30,51 @@
                     </div>
                 </div>
                 <div class="column">
+                    <h2 class="subtitle">Transform</h2>
+                    <pre>
+                    <code class="textarea language-python" id="csv-record-to-json-ld-transform">
+from js import rec
+from cromulent.model import factory, HumanMadeObject, Production, TimeSpan, Name
+from cromulent.vocab import Painting, PrimaryName, AccessionNumber
+
+rec = rec.to_py()
+id = rec['id']
+title = rec['title']
+accession = rec['accession']
+date = rec['date']
+
+pt = HumanMadeObject(ident=f"object/{id}")
+
+nm = PrimaryName(content=f"{title}")
+pt.identified_by = nm
+
+an = AccessionNumber(content=f"{accession}")
+pt.identified_by = an
+
+p = Production()
+ts = TimeSpan()
+date_label = Name(content=date)
+
+ts.identified_by = date_label
+p.timespan = ts
+pt.produced_by = p
+
+factory.toString(pt)
+</code>
+                    </pre>
+                </div>
+            </div>
+            <div class="columns">
+                <div class="column">
                     <h2 class="subtitle">Documents - linked.art JSON-LD</h2>
                     <div>
                         <ul id="py-results-code"></ul>        
                     </div>                    
                 </div>
             </div>
+
         </div>
     </section>
     <script type="text/javascript" src="./index.js"></script>
-
     </body>
 </html>
