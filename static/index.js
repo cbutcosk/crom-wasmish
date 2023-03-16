@@ -103,25 +103,6 @@ document.addEventListener("DOMContentLoaded",() => {
 
     }
 
-    async function testRunCrom(pyo) {
-        // Really just a test rig, probably don't need this
-        // return pyo.runPythonAsync(`
-        //     import json
-        //     from cromulent.model import factory
-        //     from cromulent.vocab import Painting, PrimaryName
-
-        //     pt = Painting(ident="object/1")
-        //     nm = PrimaryName(content="A Nice Painting")
-
-        //     pt.identified_by = nm
-
-        //     data = factory.toJSON(pt)
-        //     json.dumps(data,indent=2)
-        // `);
-
-
-    }
-
     function testSqlite3() {
         // Initialize Sqlite and create a DB
         self.sqlite3InitModule({}).then((sqlite3) => {
