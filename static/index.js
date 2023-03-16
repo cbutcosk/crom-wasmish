@@ -29,22 +29,36 @@ document.addEventListener("DOMContentLoaded",() => {
 
             ((results) => { 
 
-                let record = { id: results.data.id, title: results.data.title ?? "" }
+                let record = { id: results.data.id, title: results.data.title ?? "", accession: results.data.accession ?? "", date: results.data.date ?? "" }
                 rec = {...record}
 
                 let result = pyo.runPython(`
                     from js import rec
-                    from cromulent.model import factory, HumanMadeObject
-                    from cromulent.vocab import Painting, PrimaryName
+                    from cromulent.model import factory, HumanMadeObject, Production, TimeSpan, Name
+                    from cromulent.vocab import Painting, PrimaryName, AccessionNumber
                     
                     rec = rec.to_py()
                     id = rec['id']
                     title = rec['title']
+                    accession = rec['accession']
+                    date = rec['date']
 
                     pt = HumanMadeObject(ident=f"object/{id}")
-                    nm = PrimaryName(content=f"{title}")
 
+                    nm = PrimaryName(content=f"{title}")
                     pt.identified_by = nm
+
+                    an = AccessionNumber(content=f"{accession}")
+                    pt.identified_by = an
+
+                    p = Production()
+                    ts = TimeSpan()
+                    date_label = Name(content=date)
+
+                    ts.identified_by = date_label
+                    p.timespan = ts
+                    pt.produced_by = p
+
                     factory.toString(pt)
                 `)
 
@@ -71,7 +85,7 @@ document.addEventListener("DOMContentLoaded",() => {
         if (pyo) {
             removeLoading()
         }
-        
+
         function dropHandler(pyodide) {
             return (ev) => {
                 // Parse the payload -- almost shot for shot this: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
