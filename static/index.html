@@ -13,16 +13,21 @@
         <link rel="stylesheet" href="./dist/bulma/css/bulma.min.css">
         <link rel="stylesheet" href="./dist/highlight/styles/default.min.css">
     </head>
-    <body>
+    <body class="container">
+    <nav class="navbar " role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <h1 class="title">crom-wasmish: CSV records to linked.art in the browser</h1>
+        </div>
+    </nav>
     <section>
-        <div class="container">
-            <h1 class="title" id="py-env-status">crom-wasmish: CSV records to linked.art in the browser</h1>
+        <div>
+            <h2 class="subtitle">Transform Records to JSON-LD</h2>
             <div class="columns">
                 <div class="column">
-                    <h2 class="subtitle">Records</h2>
+                    <h3 >Records</h3>
                     <div>
                         <div id="csv-records-drop-zone" style="width: 200px;height: 150px;border: 5px solid blue;">
-                            <h3 class="mt-6">..loading python..</h3>
+                            <h4 class="mt-6">..loading python..</h4>
                             <progress class="progress" max="100">60%</progress>
                         </div>
                         <div id="csv-records">
@@ -30,7 +35,7 @@
                     </div>
                 </div>
                 <div class="column">
-                    <h2 class="subtitle">Transform</h2>
+                    <h3 >Transform</h3>
                     <pre>
                     <code class="textarea language-python" id="csv-record-to-json-ld-transform">
 from js import rec
