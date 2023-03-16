@@ -11,6 +11,19 @@ document.addEventListener("DOMContentLoaded",() => {
         return pyodide
     }
 
+    function removeLoading() {
+        let el = document.getElementById('csv-records-drop-zone')
+        while (el.firstChild) {
+            el.removeChild(el.firstChild)
+        }
+
+        let dropZoneText = document.createElement('p')
+        dropZoneText.innerHTML = "Drop CSV file(s) of art objects or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" download>sample CSV</a> to get started"
+
+        el.append(dropZoneText)
+
+    }
+
     async function parseCSVFile(file,pyo) {        
         let stepCallback = (results, parser) => {
 
@@ -21,14 +34,14 @@ document.addEventListener("DOMContentLoaded",() => {
 
                 let result = pyo.runPython(`
                     from js import rec
-                    from cromulent.model import factory
+                    from cromulent.model import factory, HumanMadeObject
                     from cromulent.vocab import Painting, PrimaryName
                     
                     rec = rec.to_py()
                     id = rec['id']
                     title = rec['title']
 
-                    pt = Painting(ident=f"object/{id}")
+                    pt = HumanMadeObject(ident=f"object/{id}")
                     nm = PrimaryName(content=f"{title}")
 
                     pt.identified_by = nm
@@ -55,7 +68,10 @@ document.addEventListener("DOMContentLoaded",() => {
     async function run() {
         
         const pyo = await setupPyodideAndCrom()
-
+        if (pyo) {
+            removeLoading()
+        }
+        
         function dropHandler(pyodide) {
             return (ev) => {
                 // Parse the payload -- almost shot for shot this: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
