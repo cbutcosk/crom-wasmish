@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded",() => {
         }
 
         let dropZoneText = document.createElement('p')
-        dropZoneText.innerHTML = "Drop CSV file(s) of art objects or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" download>sample CSV</a> to get started"
+        dropZoneText.innerHTML = "Drop CSV file(s) of art objects (<a href=\"./template.csv\" download>download the template</a>) or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" >sample CSV</a> to get started"
 
         el.append(dropZoneText)
 
