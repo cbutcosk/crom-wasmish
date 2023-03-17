@@ -12,6 +12,26 @@
         <script src="./dist/highlight/highlight.min.js"></script>
         <link rel="stylesheet" href="./dist/bulma/css/bulma.min.css">
         <link rel="stylesheet" href="./dist/highlight/styles/default.min.css">
+        <style>
+            .records-panel {
+                height: 350px;
+                overflow: auto;
+            }
+
+            .transform-panel {
+                height: 350px;
+                overflow: auto
+            }
+
+            .transform-panel-edit-area {
+                overflow: hidden;
+            }
+
+            .documents-panel {
+                height: 350px;
+                overflow: auto;
+            }
+        </style>
     </head>
     <body class="container">
     <nav class="navbar " role="navigation" aria-label="main navigation">
@@ -22,11 +42,16 @@
     <section>
         <div>
             <h2 class="subtitle">Transform Records to JSON-LD</h2>
+            <div class="tabs">
+                <ul>
+                    <li class="is-active" data-target="csv-records-panel"><a id="records-tab-button">Records</a></li>
+                    <li data-target="csv-record-to-json-ld-transform-panel"><a id="transform-tab-button">Transform Details</a></li>
+                </ul>
+            </div>
             <div class="columns">
-                <div class="column panel">
-                    <h3 >Records</h3>
+                <div class="column panel records-panel" id="csv-records-panel">
                     <div>
-                        <div class="panel" id="csv-records-drop-zone" style="width: 200px;height: 150px;border: 5px solid blue;">
+                        <div class="panel" id="csv-records-drop-zone" style="border: 5px solid blue;">
                             <h4 class="mt-6">..loading python..</h4>
                             <progress class="progress" max="100">60%</progress>
                         </div>
@@ -36,8 +61,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="column panel">
-                    <h3 >Transform</h3>
+                <div class="column panel transform-panel is-hidden" id="csv-record-to-json-ld-transform-panel">
                     <pre>
                     <code class="language-python" id="csv-record-to-json-ld-transform" contenteditable="true">
 from js import record
@@ -73,7 +97,7 @@ factory.toString(hmo)
                 </div>
             </div>
             <div class="columns">
-                <div class="column panel">
+                <div class="column panel documents-panel">
                     <h2 class="subtitle">Documents - linked.art JSON-LD</h2>
                     <div>
                         <ul id="py-results-code"></ul>        

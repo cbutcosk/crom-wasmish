@@ -114,7 +114,30 @@ document.addEventListener("DOMContentLoaded",() => {
             }
         }
 
-        function setupDropHandlers(pyodide) {
+        function tabActive(elementId) {
+            let el = document.getElementById(elementId)
+            let tab = el.closest('li')
+            let target = document.getElementById(tab.dataset.target)
+
+            if (tab) {
+                let allTabs = tab.parentNode.children || []
+                for ( const t of allTabs) {
+                    t.classList.remove('is-active')
+                    let tPanel = document.getElementById(t.dataset.target)
+                    tPanel.classList.add('is-hidden')
+                }
+                tab.classList.add('is-active')
+                target.classList.remove('is-hidden')
+            }
+        }
+
+        function setupHandlers(pyodide) {
+            let recordTab = document.getElementById('records-tab-button')
+            recordTab.onclick = () => { tabActive('records-tab-button') }
+
+            let transformTab = document.getElementById('transform-tab-button')
+            transformTab.onclick = () => { tabActive('transform-tab-button') }
+
             let el = document.getElementById("csv-records-drop-zone")
             el.ondrop = dropHandler(pyodide)
             el.ondragover = dragOverHandler
@@ -123,7 +146,7 @@ document.addEventListener("DOMContentLoaded",() => {
             sampleEl.onclick = sampleCSVHandler(pyodide)
         }
 
-        setupDropHandlers(pyo)
+        setupHandlers(pyo)
 
     }
 
