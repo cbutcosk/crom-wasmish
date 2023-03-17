@@ -1,3 +1,13 @@
+function clearElementChildrenById(elementId) {
+    let el = document.getElementById(elementId)
+    
+    if (el) {
+        while (el.firstChild) {
+            el.removeChild(el.firstChild)
+        }
+    }        
+}
+
 document.addEventListener("DOMContentLoaded",() => {
 
     async function setupPyodideAndCrom() {
@@ -12,55 +22,31 @@ document.addEventListener("DOMContentLoaded",() => {
     }
 
     function removeLoading() {
-        let el = document.getElementById('csv-records-drop-zone')
-        while (el.firstChild) {
-            el.removeChild(el.firstChild)
-        }
+        clearElementChildrenById('csv-records-drop-zone')
 
         let dropZoneText = document.createElement('p')
         dropZoneText.innerHTML = "Drop CSV file(s) of art objects (<a href=\"./template.csv\" download>download the template</a>) or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" >sample CSV</a> to get started"
 
+        let el = document.getElementById('csv-records-drop-zone')
         el.append(dropZoneText)
 
     }
 
-    async function parseCSVFile(file,pyo) {        
+    async function parseCSVFile(file,pyo) {   
+
+        let recordTransformEl = document.getElementById('csv-record-to-json-ld-transform')     
+        let transform = recordTransformEl.innerHTML
+
+        clearElementChildrenById('py-results-code')
+        clearElementChildrenById('csv-records-rows')
+
         let stepCallback = (results, parser) => {
 
             ((results) => { 
+                // FIXME: Check if this spread assignment is necessary, was fighting variable captures during dev
+                record = {...results.data}
 
-                let record = { id: results.data.id, title: results.data.title ?? "", accession: results.data.accession ?? "", date: results.data.date ?? "" }
-                rec = {...record}
-
-                let result = pyo.runPython(`
-                    from js import rec
-                    from cromulent.model import factory, HumanMadeObject, Production, TimeSpan, Name
-                    from cromulent.vocab import Painting, PrimaryName, AccessionNumber
-                    
-                    rec = rec.to_py()
-                    id = rec['id']
-                    title = rec['title']
-                    accession = rec['accession']
-                    date = rec['date']
-
-                    pt = HumanMadeObject(ident=f"object/{id}")
-
-                    nm = PrimaryName(content=f"{title}")
-                    pt.identified_by = nm
-
-                    an = AccessionNumber(content=f"{accession}")
-                    pt.identified_by = an
-
-                    p = Production()
-                    ts = TimeSpan()
-                    date_label = Name(content=date)
-
-                    ts.identified_by = date_label
-                    p.timespan = ts
-                    pt.produced_by = p
-
-                    factory.toString(pt)
-                `)
+                let result = pyo.runPython(transform)
 
                 let resultsUl = document.getElementById("py-results-code")
                 let resultLi = document.createElement("li")
@@ -70,6 +56,11 @@ document.addEventListener("DOMContentLoaded",() => {
                 resultLi.append(codeFence)
                 resultsUl.append(resultLi)
 
+                let recordsUl = document.getElementById("csv-records-rows")
+                let recordLi = document.createElement("li")
+                recordLi.innerHTML = JSON.stringify(record)
+
+                recordsUl.append(recordLi)
                
             })(results)
             
@@ -81,7 +72,9 @@ document.addEventListener("DOMContentLoaded",() => {
 
     async function run() {
         
-        hljs.highlightAll()
+        // FIXME: This changes the code inside the py transform area
+        // Check the hljs docs to see how the recommend styling on editable textareas (or equiv)
+        // hljs.highlightAll()
         const pyo = await setupPyodideAndCrom()
         if (pyo) {
             removeLoading()

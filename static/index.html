@@ -16,61 +16,64 @@
     <body class="container">
     <nav class="navbar " role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <h1 class="title">crom-wasmish: CSV records to linked.art in the browser</h1>
+            <h1 class="title">crom-wasmish: CSV records to linked.art</h1>
         </div>
     </nav>
     <section>
         <div>
             <h2 class="subtitle">Transform Records to JSON-LD</h2>
             <div class="columns">
-                <div class="column">
+                <div class="column panel">
                     <h3 >Records</h3>
                     <div>
-                        <div id="csv-records-drop-zone" style="width: 200px;height: 150px;border: 5px solid blue;">
+                        <div class="panel" id="csv-records-drop-zone" style="width: 200px;height: 150px;border: 5px solid blue;">
                             <h4 class="mt-6">..loading python..</h4>
                             <progress class="progress" max="100">60%</progress>
                         </div>
-                        <div id="csv-records">
+                        <div >
+                            <ul id="csv-records-rows">
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div class="column">
+                <div class="column panel">
                     <h3 >Transform</h3>
                     <pre>
-                    <code class="textarea language-python" id="csv-record-to-json-ld-transform">
-from js import rec
+                    <code class="language-python" id="csv-record-to-json-ld-transform" contenteditable="true">
+from js import record
 from cromulent.model import factory, HumanMadeObject, Production, TimeSpan, Name
 from cromulent.vocab import Painting, PrimaryName, AccessionNumber
 
-rec = rec.to_py()
-id = rec['id']
-title = rec['title']
-accession = rec['accession']
-date = rec['date']
+record = record.to_py()
 
-pt = HumanMadeObject(ident=f"object/{id}")
+id = record.get('id','FIXME_ID_ERROR')
 
-nm = PrimaryName(content=f"{title}")
-pt.identified_by = nm
+hmo = HumanMadeObject(ident=f"object/{id}")
 
-an = AccessionNumber(content=f"{accession}")
-pt.identified_by = an
+if title := record.get('title'):
+    nm = PrimaryName(content=f"{title}")
+    hmo.identified_by = nm
 
-p = Production()
-ts = TimeSpan()
-date_label = Name(content=date)
+if accession := record.get('accession'):
+    an = AccessionNumber(content=f"{accession}")
+    hmo.identified_by = an
 
-ts.identified_by = date_label
-p.timespan = ts
-pt.produced_by = p
+if date := record.get('date'):
+    p = Production()
+    ts = TimeSpan()
+    date_label = Name(content=date)
 
-factory.toString(pt)
+    ts.identified_by = date_label
+    p.timespan = ts
+    hmo.produced_by = p
+
+factory.toString(hmo)
 </code>
                     </pre>
                 </div>
             </div>
             <div class="columns">
-                <div class="column">
+                <div class="column panel">
                     <h2 class="subtitle">Documents - linked.art JSON-LD</h2>
                     <div>
                         <ul id="py-results-code"></ul>        
