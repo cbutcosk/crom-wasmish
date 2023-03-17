@@ -25,11 +25,10 @@ document.addEventListener("DOMContentLoaded",() => {
         clearElementChildrenById('csv-records-drop-zone')
 
         let dropZoneText = document.createElement('p')
-        dropZoneText.innerHTML = "Drop CSV file(s) of art objects (<a href=\"./template.csv\" download>download the template</a>) or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" >sample CSV</a> to get started"
+        dropZoneText.innerHTML = "<div class=\"block\"><label for=\"csv-file-chooser\">Choose a CSV file of art objects (<a href=\"./template.csv\" download>download the template</a>) or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" >sample CSV</a> to get started</label><input class=\"input\" type=\"file\" id=\"csv-file-chooser\" /></div>"
 
         let el = document.getElementById('csv-records-drop-zone')
         el.append(dropZoneText)
-
     }
 
     async function parseCSVFile(file,pyo) {   
@@ -78,6 +77,20 @@ document.addEventListener("DOMContentLoaded",() => {
         const pyo = await setupPyodideAndCrom()
         if (pyo) {
             removeLoading()
+        }
+
+        function fileChooseHandler(pyodide) {
+            return (ev) => {
+                // Parse the payload -- almost shot for shot this: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+                ev.preventDefault()
+                if (ev.target.files.length === 0) {
+                    return
+                }
+
+                [...ev.target.files].forEach((file,i) => {
+                    parseCSVFile(file,pyodide)
+                })
+            }
         }
 
         function dropHandler(pyodide) {
@@ -141,6 +154,9 @@ document.addEventListener("DOMContentLoaded",() => {
             let el = document.getElementById("csv-records-drop-zone")
             el.ondrop = dropHandler(pyodide)
             el.ondragover = dragOverHandler
+
+            let fileInput = document.getElementById('csv-file-chooser')
+            fileInput.onchange = fileChooseHandler(pyodide)
 
             let sampleEl = document.getElementById("csv-records-use-sample")
             sampleEl.onclick = sampleCSVHandler(pyodide)
