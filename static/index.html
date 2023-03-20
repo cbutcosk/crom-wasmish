@@ -62,6 +62,11 @@
                     </div>
                 </div>
                 <div class="column panel transform-panel is-hidden" id="csv-record-to-json-ld-transform-panel">
+                    <article class="message is-primary">
+                        <div class="message-body">
+                            Change this transform! Each row of the source data is passed completely to the transform as `record`. Re-uploading the data source will re-run the transform below with any edits or changes you've made.
+                        </div>
+                    </article>
                     <pre>
                     <code class="language-python" id="csv-record-to-json-ld-transform" contenteditable="true">
 from js import record
