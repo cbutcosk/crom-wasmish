@@ -7,7 +7,7 @@
         <title>crom-wasmish: CSV to linked.art JSON-LD</title>
 
         <script src="./dist/pyodide/pyodide.js"></script>
-        <!-- <script src="./dist/sqlite-wasm-3410100/jswasm/sqlite3.js"></script> -->
+        <script src="./dist/sqlite-wasm-3410100/jswasm/sqlite3.js"></script>
         <script src="./dist/papaparse.min"></script>
         <script src="./dist/highlight/highlight.min.js"></script>
         <link rel="stylesheet" href="./dist/bulma/css/bulma.min.css">
@@ -42,28 +42,43 @@
                 opacity: 0.5;
             }
 
+
             .call-to-action-hero {
                 width: 75%;
                 margin-left: auto;
                 margin-right: auto;
-                column-gap: 1em;
-                justify-content: center;
-                flex-direction: row;
-                align-items: center;
             }
+
+            @media (min-width: 978px) {
+                .call-to-action-hero {
+                    column-gap: 1em;
+                    justify-content: center;
+                    flex-direction: row;
+                    align-items: center;
+                }
+            }
+
+            @media (max-width: 978px) {
+                .call-to-action-hero {
+                    row-gap: 1em;
+                    justify-content: center;
+                    align-items: center;                    
+                }                
+            }
+
         </style>
     </head>
     <body>
         <nav class="navbar" role="navigation" aria-label="main navigation">
             <div class="container navbar-brand">
-                <h1 class="title is-1">Transform Records to linked.art JSON-LD</h1>
+                <h1 class="title is-1">Transform Artwork Data to JSON-LD linked.art</h1>
             </div>
         </nav>
     <div class="modal is-active is-one-third" id="python-loading-modal">
         <div class="modal-background python-loading-background"></div>
         <div class="modal-content">
             <div class="box">
-            <h4>..loading python..</h4>
+            <h4>..loading environment..</h4>
             <progress class="progress" max="100">60%</progress>
         </div>
         </div>
@@ -151,7 +166,7 @@ factory.toString(hmo)
                         <ul>
                             <li>Choose a comma-separated value file.</li>
                             <li>Each row is passed to a data transform that produces JSON-LD in linked.art.</li>
-                            <li>Review the JSON-LD output and download is as a big JSON document or a SQLite database (TKTKTK).</li>
+                            <li>Review the JSON-LD output and download it as a big JSON document or a SQLite database (TKTKTK).</li>
                         </ul>
 
                         <p>All of this is done from static HTML, JS, and WASM files in the user's browser, so no data is passed over the network and no internet connection is required once the site is cached. The transform is editable, so the CSV template and starter transform is only a sketch of what's possible.</p>
@@ -167,12 +182,17 @@ factory.toString(hmo)
                         </ul>
 
                         <h3>Gotchas</h3>
-                        <p>Hmm, these probably abound--the python environment startup time is slow and alpha, some of the python runs on the main thread, WASM is a little bananas--it's easy to stale closures and the memory model is... whew. But, if it breaks just reload.</p>
+                        <p>Hmm, these probably abound--the python environment startup time is slow (and pyodide remains alpha), some of the python runs on the main thread, WASM is a little bananas--it's easy to stale closures and the memory model is... whew. But, if it breaks just reload.</p>
 
                     </div>
                 </div>
             </div>
             <h2 class="subtitle">Documents - linked.art JSON-LD</h2>
+            <div>
+                <a id="download-json-button" class="button" disabled>Download as JSON</a>
+                <a id="download-sqlite-button" class="button" disabled>Download as SQLite</a>
+            </div>
+
             <div class="columns">
                 <div class="column panel documents-panel">
                     <div>

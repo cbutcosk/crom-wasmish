@@ -26,6 +26,14 @@ document.addEventListener("DOMContentLoaded",() => {
         loadingModal.classList.remove('is-active')
     }
 
+    function doneParsing() {
+        let downloadJson = document.getElementById('download-json-button')
+        let downloadSql = document.getElementById('download-sqlite-button')
+
+        downloadJson.toggleAttribute('disabled')
+        downloadSql.toggleAttribute('disabled')
+
+    }
     async function parseCSVFile(file,pyo) {   
 
         let recordTransformEl = document.getElementById('csv-record-to-json-ld-transform')     
@@ -33,6 +41,8 @@ document.addEventListener("DOMContentLoaded",() => {
 
         clearElementChildrenById('py-results-code')
         clearElementChildrenById('csv-records-rows')
+
+        window.jsonResults = []
 
         let stepCallback = (results, parser) => {
 
@@ -55,13 +65,14 @@ document.addEventListener("DOMContentLoaded",() => {
                 recordLi.innerHTML = JSON.stringify(record)
 
                 recordsUl.append(recordLi)
-               
+                window.jsonResults.push(result)
+
             })(results)
             
         }
 
         Papa.parse(file,{header: true, step: stepCallback, worker: false, download: (typeof file) === "string" ? "true" : "false" })
-
+        doneParsing()
     }
 
     async function run() {
@@ -139,6 +150,37 @@ document.addEventListener("DOMContentLoaded",() => {
             }
         }
 
+        function sqlite3Create() {
+
+            return new Promise( (resolve,reject) => {
+                self.sqlite3InitModule().then( (sqlite3) => {
+                    console.log("Done sqlite3 init")
+                    oo = sqlite3.oo1
+                    const db = new oo.DB()
+
+                    try {
+                        db.exec("CREATE TABLE documents(body json)")
+                        for (const doc of window.jsonResults) {
+                            db.exec({ sql:"INSERT INTO documents values (?)", bind: doc})
+                        }
+                        db.exec("VACUUM")
+                    } catch(e) {
+                        console.error("Sqlite3 Error:",e)
+                        reject(e)
+                    }
+
+                    try {
+                        const byteArray = sqlite3.capi.sqlite3_js_db_export(db)
+                        resolve(byteArray)
+                    } catch(e) {
+                        console.error("Sqlite3 Serialization Error:",e)
+                        reject(e)
+                    }
+                })
+            })
+
+       }
+
         function setupHandlers(pyodide) {
             let recordTab = document.getElementById('records-tab-button')
             recordTab.onclick = () => { tabActive('records-tab-button') }
@@ -158,19 +200,45 @@ document.addEventListener("DOMContentLoaded",() => {
 
             let sampleEl = document.getElementById("csv-records-use-sample")
             sampleEl.onclick = sampleCSVHandler(pyodide)
+
+            let downloadJSONButton = document.getElementById("download-json-button")
+            downloadJSONButton.onclick = () => { 
+                console.log("Download JSON",window.jsonResults) 
+
+                    const data = `{ "items": [ ${window.jsonResults.join(', ')} ]`
+                    const blob = new Blob([data],{type: "application/json"}) 
+                    const downloadUrl = window.URL.createObjectURL(blob)
+                    let a = document.createElement('a')
+                    a.href = downloadUrl
+                    a.download = "documents.json"
+                    document.body.appendChild(a)
+                    a.click()
+                    URL.revokeObjectURL(downloadUrl)
+
+            }
+            // FIXME: Download this as a thing
+
+            let downloadSQLiteButton = document.getElementById("download-sqlite-button")
+            downloadSQLiteButton.onclick = () => { 
+
+                sqlite3Create().then( bytes => {
+
+                    const blob = new Blob([bytes.buffer],{type: "application/x-sqlite3"}) 
+                    const downloadUrl = window.URL.createObjectURL(blob)
+                    let a = document.createElement('a')
+                    a.href = downloadUrl
+                    a.download = "documents.sqlite3"
+                    document.body.appendChild(a)
+                    a.click()
+                    URL.revokeObjectURL(downloadUrl)
+
+                })
+
+            }
+
         }
 
         setupHandlers(pyo)
-
-    }
-
-    function testSqlite3() {
-        // Initialize Sqlite and create a DB
-        self.sqlite3InitModule({}).then((sqlite3) => {
-            const oo = sqlite3.oo1
-            const db = new oo.DB("/mydb.sqlite3",'ct');
-            console.debug("Sqlite3 initialized")
-        })
 
     }
 
