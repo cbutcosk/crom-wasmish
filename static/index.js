@@ -44,8 +44,9 @@ document.addEventListener("DOMContentLoaded",() => {
 
         window.jsonResults = []
 
-        let stepCallback = (results, parser) => {
+        let step = (results, parser) => {
 
+            // IIFE so vars can escape capture
             ((results) => { 
                 // FIXME: Check if this spread assignment is necessary, was fighting variable captures during dev
                 record = {...results.data}
@@ -71,8 +72,11 @@ document.addEventListener("DOMContentLoaded",() => {
             
         }
 
-        Papa.parse(file,{header: true, step: stepCallback, worker: false, download: (typeof file) === "string" ? "true" : "false" })
-        doneParsing()
+        let complete = (results,parser) => {
+            doneParsing()
+        }
+        Papa.parse(file,{header: true, step, complete, worker: false, download: (typeof file) === "string" ? "true" : "false" })
+
     }
 
     async function run() {
@@ -97,32 +101,6 @@ document.addEventListener("DOMContentLoaded",() => {
                     parseCSVFile(file,pyodide)
                 })
             }
-        }
-
-        function dropHandler(pyodide) {
-            return (ev) => {
-                // Parse the payload -- almost shot for shot this: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
-                ev.preventDefault()
-
-                if (ev.dataTransfer.items) {
-                    [...ev.dataTransfer.items].forEach((item,i) => {
-                        if (item.kind === "file") {
-                            const file = item.getAsFile();
-                            parseCSVFile(file,pyodide)
-                        }
-                    })
-                } else {
-                    [...ev.dataTransfer.files].forEach((file,i) => {
-                        parseCSVFile(file,pyodide)
-                    })
-                }
-
-            }
-        }
-
-        function dragOverHandler(ev) {
-            // Just no-ops the browser drop handler (which would attempt to load the doc)
-            ev.preventDefault()
         }
 
         function sampleCSVHandler(pyo) {
@@ -191,10 +169,6 @@ document.addEventListener("DOMContentLoaded",() => {
             let aboutTab = document.getElementById('about-tab-button')
             aboutTab.onclick = () => { tabActive('about-tab-button') }
 
-            let el = document.getElementById("csv-records-drop-zone")
-            el.ondrop = dropHandler(pyodide)
-            el.ondragover = dragOverHandler
-
             let fileInput = document.getElementById('csv-file-chooser')
             fileInput.onchange = fileChooseHandler(pyodide)
 
@@ -203,7 +177,6 @@ document.addEventListener("DOMContentLoaded",() => {
 
             let downloadJSONButton = document.getElementById("download-json-button")
             downloadJSONButton.onclick = () => { 
-                console.log("Download JSON",window.jsonResults) 
 
                     const data = `{ "items": [ ${window.jsonResults.join(', ')} ]`
                     const blob = new Blob([data],{type: "application/json"}) 
