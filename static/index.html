@@ -42,7 +42,6 @@
                 opacity: 0.5;
             }
 
-
             .call-to-action-hero {
                 width: 75%;
                 margin-left: auto;
@@ -166,10 +165,28 @@ factory.toString(hmo)
                         <ul>
                             <li>Choose a comma-separated value file.</li>
                             <li>Each row is passed to a data transform that produces JSON-LD in linked.art.</li>
-                            <li>Review the JSON-LD output and download it as a big JSON document or a SQLite database (TKTKTK).</li>
+                            <li>Review the JSON-LD output and download it as a big JSON document or a SQLite database.</li>
                         </ul>
 
                         <p>All of this is done from static HTML, JS, and WASM files in the user's browser, so no data is passed over the network and no internet connection is required once the site is cached. The transform is editable, so the CSV template and starter transform is only a sketch of what's possible.</p>
+
+                        <h3>Downloads</h3>
+                        <p>The output of the data transform is available as:</p>
+                        <ul>
+                            <li>A JSON document like:</li>
+                            <pre><code>
+                                { 
+                                    "items": [ 
+                                        {
+                                            "@context": "https://linked.art/ns/v1/linked-art.json",
+                                            "id": "https://example.org/object/1",
+                                            /* ... JSON documents 
+                                        }
+                                    ]
+                                }
+                            </code></pre>
+                            <li>A SQLite3 database with `records` and `documents` tables that contain rows for every input record and output document, respectively.</li>
+                        </ul>
 
                         <h3>Technical Details</h3>
                         <p>There ends up being rather a lot in this tiny package:</p>
@@ -178,27 +195,26 @@ factory.toString(hmo)
                             <li><a href="https://www.papaparse.com/" target="_blank">Papaparse</a> - streaming CSV parsing (also in WASM)</li>
                             <li><a href="https://github.com/linked-art/crom/" target="_blank">crom</a> - linked.art modeling</li>
                             <li><a href="https://github.com/cbutcosk/crom-wasmish/" target="_blank">crom-wasmish</a> - some patches and build scripts to make crom work as a pure-python wheel</li>
-                            <li><a href="https://sqlite.org/wasm/doc/trunk/index.md" target="_blank">SQLite</a> - database download (TKTKTK)</li>
+                            <li><a href="https://sqlite.org/wasm/doc/trunk/index.md" target="_blank">SQLite</a> - database download/li>
                         </ul>
 
                         <h3>Gotchas</h3>
-                        <p>Hmm, these probably abound--the python environment startup time is slow (and pyodide remains alpha), some of the python runs on the main thread, WASM is a little bananas--it's easy to stale closures and the memory model is... whew. But, if it breaks just reload.</p>
+                        <p>Hmm, these probably abound--the python environment startup time is slow (and pyodide remains alpha), some of the python runs on the main thread, WASM is a little bananas--it's easy to stale closures and the memory model is... whew. But, if it breaks just try reloading.</p>
 
                     </div>
                 </div>
             </div>
             <h2 class="subtitle">Documents - linked.art JSON-LD</h2>
-            <div>
-                <a id="download-json-button" class="button" disabled>Download as JSON</a>
-                <a id="download-sqlite-button" class="button" disabled>Download as SQLite</a>
-            </div>
-
             <div class="columns">
                 <div class="column panel documents-panel">
                     <div>
                         <ul id="py-results-code"></ul>        
                     </div>                    
                 </div>
+            </div>
+            <div class="block">
+                <a id="download-json-button" class="button" disabled>Download as JSON</a>
+                <a id="download-sqlite-button" class="button" disabled>Download as SQLite</a>
             </div>
 
         </div>

@@ -30,19 +30,22 @@ document.addEventListener("DOMContentLoaded",() => {
         let downloadJson = document.getElementById('download-json-button')
         let downloadSql = document.getElementById('download-sqlite-button')
 
-        downloadJson.toggleAttribute('disabled')
-        downloadSql.toggleAttribute('disabled')
+        downloadJson.removeAttribute('disabled')
+        downloadSql.removeAttribute('disabled')
 
     }
-    async function parseCSVFile(file,pyo) {   
+    async function parseCSVFile(file,pyo,display=true) {   
 
         let recordTransformEl = document.getElementById('csv-record-to-json-ld-transform')     
         let transform = recordTransformEl.innerHTML
 
-        clearElementChildrenById('py-results-code')
-        clearElementChildrenById('csv-records-rows')
+        if (display) {
+            clearElementChildrenById('py-results-code')
+            clearElementChildrenById('csv-records-rows')            
+        }
 
         window.jsonResults = []
+        window.recordResults = []
 
         let step = (results, parser) => {
 
@@ -53,20 +56,24 @@ document.addEventListener("DOMContentLoaded",() => {
 
                 let result = pyo.runPython(transform)
 
-                let resultsUl = document.getElementById("py-results-code")
-                let resultLi = document.createElement("li")
-                let codeFence = document.createElement("code")
-                codeFence.innerHTML = result
+                if (display) {
+                    let resultsUl = document.getElementById("py-results-code")
+                    let resultLi = document.createElement("li")
+                    let codeFence = document.createElement("code")
+                    codeFence.innerHTML = result
 
-                resultLi.append(codeFence)
-                resultsUl.append(resultLi)
+                    resultLi.append(codeFence)
+                    resultsUl.append(resultLi)
 
-                let recordsUl = document.getElementById("csv-records-rows")
-                let recordLi = document.createElement("li")
-                recordLi.innerHTML = JSON.stringify(record)
+                    let recordsUl = document.getElementById("csv-records-rows")
+                    let recordLi = document.createElement("li")
+                    recordLi.innerHTML = JSON.stringify(record)
+    
+                    recordsUl.append(recordLi)
+                }
 
-                recordsUl.append(recordLi)
                 window.jsonResults.push(result)
+                window.recordResults.push(JSON.stringify(record))
 
             })(results)
             
@@ -75,6 +82,7 @@ document.addEventListener("DOMContentLoaded",() => {
         let complete = (results,parser) => {
             doneParsing()
         }
+
         Papa.parse(file,{header: true, step, complete, worker: false, download: (typeof file) === "string" ? "true" : "false" })
 
     }
@@ -138,9 +146,16 @@ document.addEventListener("DOMContentLoaded",() => {
 
                     try {
                         db.exec("CREATE TABLE documents(body json)")
+                        db.exec("CREATE TABLE records(body json)")
+
                         for (const doc of window.jsonResults) {
                             db.exec({ sql:"INSERT INTO documents values (?)", bind: doc})
                         }
+
+                        for (const rec of window.recordResults) {
+                            db.exec({ sql:"INSERT INTO records values (?)", bind: rec})
+                        }
+
                         db.exec("VACUUM")
                     } catch(e) {
                         console.error("Sqlite3 Error:",e)
