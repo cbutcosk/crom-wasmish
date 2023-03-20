@@ -23,6 +23,11 @@
                 overflow: auto
             }
 
+            .about-panel {
+                height: 350px;
+                overflow: auto
+            }
+
             .transform-panel-edit-area {
                 overflow: hidden;
             }
@@ -31,25 +36,64 @@
                 height: 350px;
                 overflow: auto;
             }
+
+            .python-loading-background {
+                background-color: lightgrey !important;
+                opacity: 0.5;
+            }
+
+            .call-to-action-hero {
+                width: 75%;
+                margin-left: auto;
+                margin-right: auto;
+                column-gap: 1em;
+                justify-content: center;
+                flex-direction: row;
+                align-items: center;
+            }
         </style>
     </head>
-    <body class="container">
-    <nav class="navbar " role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <h1 class="title">crom-wasmish: CSV records to linked.art</h1>
+    <body>
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container navbar-brand">
+                <h1 class="title is-1">Transform Records to linked.art JSON-LD</h1>
+            </div>
+        </nav>
+    <div class="modal is-active is-one-third" id="python-loading-modal">
+        <div class="modal-background python-loading-background"></div>
+        <div class="modal-content">
+            <div class="box">
+            <h4>..loading python..</h4>
+            <progress class="progress" max="100">60%</progress>
         </div>
-    </nav>
-    <section>
-        <div>
-            <h2 class="subtitle">Transform Records to JSON-LD</h2>
-            <div id="csv-records-drop-zone">
-                <h4>..loading python..</h4>
-                <progress class="progress" max="100">60%</progress>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="hero call-to-action-hero" id="csv-records-drop-zone">
+                <div class="file">
+                    <label class="file-label" for="csv-file-chooser">
+                        <span class="file-cta">
+                            <span class="file-icon"><i class="fas fa-upload"></i></span>
+                        <span class="file-label">Choose a CSV file</span>
+                        </span>
+                    </label>
+                    <input class="file-input" type="file" id="csv-file-chooser" />
+                </div>
+                <div><h3 class="subtitle">
+                    <a href="./template.csv" download>Download a template</a>
+                </h3></div>
+                <div>or</div>
+                <div><h3 class="subtitle">
+                    <a id="csv-records-use-sample" href="./sample.csv" >See a demo</a>
+                </h3></div>
             </div>
             <div class="tabs">
                 <ul>
                     <li class="is-active" data-target="csv-records-panel"><a id="records-tab-button">Records</a></li>
                     <li data-target="csv-record-to-json-ld-transform-panel"><a id="transform-tab-button">Transform Details</a></li>
+                    <li data-target="about-panel"><a id="about-tab-button">About</a></li>
                 </ul>
             </div>
             <div class="columns">
@@ -99,6 +143,33 @@ if date := record.get('date'):
 factory.toString(hmo)
 </code>
                     </pre>
+                </div>
+                <div class="column panel about-panel is-hidden" id="about-panel">
+                    <div class="content">
+
+                        <p>This tool enables linked data-curious cataloguers and other cultural heritage data workers to be productive in <a href="https://linked.art/model/">linked.art</a> at a large scale without backend fussing.</p>
+                        <ul>
+                            <li>Choose a comma-separated value file.</li>
+                            <li>Each row is passed to a data transform that produces JSON-LD in linked.art.</li>
+                            <li>Review the JSON-LD output and download is as a big JSON document or a SQLite database (TKTKTK).</li>
+                        </ul>
+
+                        <p>All of this is done from static HTML, JS, and WASM files in the user's browser, so no data is passed over the network and no internet connection is required once the site is cached. The transform is editable, so the CSV template and starter transform is only a sketch of what's possible.</p>
+
+                        <h3>Technical Details</h3>
+                        <p>There ends up being rather a lot in this tiny package:</p>
+                        <ul>
+                            <li><a href="https://pyodide.org/en/stable/" target="_blank">Pyodide</a> - Python WASM implementation and packaging</li>
+                            <li><a href="https://www.papaparse.com/" target="_blank">Papaparse</a> - streaming CSV parsing (also in WASM)</li>
+                            <li><a href="https://github.com/linked-art/crom/" target="_blank">crom</a> - linked.art modeling</li>
+                            <li><a href="https://github.com/cbutcosk/crom-wasmish/" target="_blank">crom-wasmish</a> - some patches and build scripts to make crom work as a pure-python wheel</li>
+                            <li><a href="https://sqlite.org/wasm/doc/trunk/index.md" target="_blank">SQLite</a> - database download (TKTKTK)</li>
+                        </ul>
+
+                        <h3>Gotchas</h3>
+                        <p>Hmm, these probably abound--the python environment startup time is slow and alpha, some of the python runs on the main thread, WASM is a little bananas--it's easy to stale closures and the memory model is... whew. But, if it breaks just reload.</p>
+
+                    </div>
                 </div>
             </div>
             <h2 class="subtitle">Documents - linked.art JSON-LD</h2>

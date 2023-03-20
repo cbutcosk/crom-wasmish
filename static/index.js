@@ -22,13 +22,8 @@ document.addEventListener("DOMContentLoaded",() => {
     }
 
     function removeLoading() {
-        clearElementChildrenById('csv-records-drop-zone')
-
-        let dropZoneText = document.createElement('p')
-        dropZoneText.innerHTML = "<div class=\"block\"><label for=\"csv-file-chooser\">Choose a CSV file of art objects (<a href=\"./template.csv\" download>download the template</a>) or use a <a id=\"csv-records-use-sample\" href=\"./sample.csv\" >sample CSV</a> to get started</label><input class=\"input\" type=\"file\" id=\"csv-file-chooser\" /></div>"
-
-        let el = document.getElementById('csv-records-drop-zone')
-        el.append(dropZoneText)
+        let loadingModal = document.getElementById('python-loading-modal')
+        loadingModal.classList.remove('is-active')
     }
 
     async function parseCSVFile(file,pyo) {   
@@ -150,6 +145,9 @@ document.addEventListener("DOMContentLoaded",() => {
 
             let transformTab = document.getElementById('transform-tab-button')
             transformTab.onclick = () => { tabActive('transform-tab-button') }
+
+            let aboutTab = document.getElementById('about-tab-button')
+            aboutTab.onclick = () => { tabActive('about-tab-button') }
 
             let el = document.getElementById("csv-records-drop-zone")
             el.ondrop = dropHandler(pyodide)
